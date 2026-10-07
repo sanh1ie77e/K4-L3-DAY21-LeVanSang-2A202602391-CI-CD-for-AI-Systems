@@ -1,54 +1,38 @@
-# Báo Cáo Lab Day 21 - CI/CD cho AI Systems
+# Báo cáo Day 21 - CI/CD cho AI Systems
 
-| | |
-|---|---|
-| Họ và tên | Lê Văn Sang |
-| MSSV | 2A202602391 |
-| Lớp / Khóa | K4 |
-| Repo GitHub | https://github.com/sanh1ie77e/K4-L3-DAY21-LeVanSang-2A202602391-CI-CD-for-AI-Systems |
-| Ngày nộp | Chưa nộp; cần hoàn thành kiểm chứng AWS |
+**Lê Văn Sang - MSSV 2A202602391 - K4**
 
----
+Ngày lập: 07/10/2026. [Repo GitHub](https://github.com/sanh1ie77e/K4-L3-DAY21-LeVanSang-2A202602391-CI-CD-for-AI-Systems).
 
-## 1. Bộ Siêu Tham Số Đã Chọn và Lý Do
+## 1. Siêu tham số và lựa chọn
 
-Kết quả thực nghiệm cục bộ trên 22.361 mẫu huấn luyện và 500 mẫu holdout cố định:
+Ba thí nghiệm MLflow dùng 22.361 mẫu train và 500 mẫu holdout:
 
-| Lần chạy | n_estimators | learning_rate | max_depth | f1_score | accuracy |
+| Run | n_estimators | learning_rate | max_depth | F1 | Accuracy |
 |---|---|---|---|---|---|
-| 1 | 100 | 0.1 | 3 | 0.710900 | 0.878000 |
-| 2 | 50 | 0.05 | 2 | 0.605128 | 0.846000 |
-| 3 | 200 | 0.1 | 5 | 0.714932 | 0.874000 |
+| 1 | 100 | 0.1 | 3 | 0.710900 | 0.878 |
+| 2 | 50 | 0.05 | 2 | 0.605128 | 0.846 |
+| 3 | 200 | 0.1 | 5 | 0.714932 | 0.874 |
 
-**Bộ siêu tham số đã chọn:** `n_estimators=200`, `learning_rate=0.1`, `max_depth=5`.
+Chọn **200 cây, learning_rate=0.1, max_depth=5** vì F1 cao nhất và vượt 0.65. Run 1 có accuracy cao hơn nhưng F1 thấp hơn. Ba cấu hình thay đổi nhiều tham số nên chưa tách được tác động riêng từng tham số.
 
-**Lý do:** Lần 3 có F1 cao nhất và vượt ngưỡng 0,65. Lần 1 có accuracy cao nhất nhưng F1 thấp hơn, nên không được chọn. Cấu hình 50 cây với learning rate 0,05 và độ sâu 2 chưa đạt ngưỡng. Do ba cấu hình thay đổi nhiều tham số cùng lúc, chưa thể kết luận tác động riêng của từng tham số.
+## 2. Vì sao dùng F1 thay accuracy
 
----
+Lớp thu nhập cao chỉ chiếm khoảng 24.8%. Luôn dự đoán thu nhập thấp vẫn cho accuracy khoảng 75.2% nhưng F1 lớp dương bằng 0. F1 kết hợp precision và recall; gate dùng F1 của target=1, accuracy được ghi để tham khảo.
 
-## 2. Vì Sao Ngưỡng Chất Lượng Đặt Trên F1 Chứ Không Phải Accuracy
+## 3. Khó khăn và kiểm chứng triển khai
 
-Lớp thu nhập cao chiếm khoảng 24,8%. Mô hình luôn dự đoán thu nhập thấp vẫn có accuracy khoảng 75,2% nhưng F1 lớp dương bằng 0. F1 kết hợp precision và recall để đánh giá khả năng nhận diện lớp thu nhập cao. Vì vậy quality gate kiểm tra F1 của target=1, không dùng accuracy, macro hoặc weighted F1. Accuracy vẫn được ghi vào MLflow để tham khảo.
+Python 3.13 không phù hợp thư viện ghim: chuyển sang Python 3.10.16. Triển khai bằng AWS S3/EC2 thay ví dụ GCP. SSH Windows từ chối PEM do quyền quá rộng: giới hạn quyền cho chủ sở hữu. Release lỗi khóa/IP: cập nhật Secrets bằng toàn bộ PEM, IP EC2 và user ubuntu.
 
----
+Đã lưu dữ liệu DVC trên S3 và model tại artifacts/current/model.joblib. API EC2 trả status=ok và nhãn hợp lệ. [Gate thử nghiệm](https://github.com/sanh1ie77e/K4-L3-DAY21-LeVanSang-2A202602391-CI-CD-for-AI-Systems/actions/runs/37583426297/attempts/1), commit 93c5684: F1=0.605128 khiến Quality Gate thất bại, Release skipped; sau đó khôi phục cấu hình tốt.
 
-## 3. Khó Khăn Gặp Phải và Cách Giải Quyết
+## 4. So sánh CI/CD thực tế Bước 2 và Bước 3
 
-| Khó khăn | Nguyên nhân | Cách giải quyết |
-|---|---|---|
-| Cài scikit-learn thất bại | Python 3.13 không phù hợp với bộ thư viện ghim | Dùng Python 3.10.16 và môi trường .venv |
-| Cấu hình cloud chưa đúng tài khoản hiện có | Đề lấy GCP làm ví dụ, người thực hiện dùng AWS | Chuyển DVC sang S3, SDK sang boto3 và API chạy trên EC2 |
-| SSH từ Windows từ chối khóa riêng | Quyền truy cập file PEM quá rộng | Giới hạn quyền file cho tài khoản sở hữu; kết nối SSH và chạy bootstrap EC2 thành công |
+| Lần chạy | Mẫu train | F1 | Accuracy |
+|---|---|---|---|
+| [Bước 2, #3](https://github.com/sanh1ie77e/K4-L3-DAY21-LeVanSang-2A202602391-CI-CD-for-AI-Systems/actions/runs/37583784857) | 22.361 | 0.714932 | 0.874 |
+| [Bước 3, #4](https://github.com/sanh1ie77e/K4-L3-DAY21-LeVanSang-2A202602391-CI-CD-for-AI-Systems/actions/runs/37584491283) | 44.722 | 0.735426 | 0.882 |
 
-**Trạng thái kiểm chứng ngày 07/10/2026:** Đã đăng nhập AWS CLI và đẩy 3 file dữ liệu DVC lên S3. GitHub chưa có lần chạy Actions; S3 chưa có `artifacts/current/model.joblib`; chưa kết nối được API EC2 cổng 8080. Cần hoàn thành hai lần chạy CI/CD và lưu ảnh bằng chứng trước khi nộp.
+Thêm batch2 làm F1 tăng 0.020494 và accuracy tăng 0.008, giữ nguyên tham số và 500 mẫu holdout. Hai batch cùng phân phối; tăng số mẫu có thể giúp mô hình học thêm trường hợp, nhưng mức cải thiện trên holdout này chưa đủ kết luận thêm dữ liệu luôn tốt hơn. Commit cdea4ee chỉ cập nhật data/train_batch1.csv.dvc đã tự kích hoạt cả bốn jobs và triển khai thành công.
 
----
-
-## 4. So Sánh Bước 2 và Bước 3 (bắt buộc, 2 - 3 câu)
-
-| | f1_score | accuracy |
-|---|---|---|
-| Bước 2 (chỉ `train_batch1`) | Chưa có artifact Actions | Chưa có artifact Actions |
-| Bước 3 (thêm `train_batch2`) | Chưa có artifact Actions | Chưa có artifact Actions |
-
-**Nhận xét:** Mô phỏng cục bộ cho F1 tăng từ 0,714932 lên 0,735426 và accuracy tăng từ 0,874 lên 0,882 khi ghép thêm dữ liệu, giữ nguyên holdout. Các số này chưa phải kết quả CI/CD trên AWS; cần thay bảng bằng artifact của hai lần chạy Actions thực tế trước khi nộp.
+**Báo cáo chi tiết:** detail.txt được lưu cùng report.json; Bước 3 có precision lớp dương 0.8283, recall 0.6613, FP=17 và FN=42. Với giả định dùng mô hình tìm nhóm thu nhập cao để tiếp cận, FN bỏ sót đối tượng phù hợp nên recall đáng chú ý; FP làm lãng phí lượt tiếp cận. Tỷ lệ lớp dương 24.7842%, chưa vượt mức cảnh báo lệch 5 điểm phần trăm so với 24.8%.

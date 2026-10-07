@@ -117,8 +117,10 @@ Tải file `outputs/report.json` từ artifacts của hai lần chạy để so 
 
 | Chỉ số | Bước 2 (22.361 mẫu) | Bước 3 (44.722 mẫu) |
 |---|---|---|
-| f1_score | ? | ? |
-| accuracy | ? | ? |
+| f1_score | 0.714932 | 0.735426 |
+| accuracy | 0.874000 | 0.882000 |
+
+**Kết quả thực tế:** Bước 2 lấy từ [Actions #3](https://github.com/sanh1ie77e/K4-L3-DAY21-LeVanSang-2A202602391-CI-CD-for-AI-Systems/actions/runs/37583784857), Bước 3 lấy từ [Actions #4](https://github.com/sanh1ie77e/K4-L3-DAY21-LeVanSang-2A202602391-CI-CD-for-AI-Systems/actions/runs/37584491283). F1 tăng 0.020494 và accuracy tăng 0.008, với cùng bộ tham số và 500 mẫu holdout. Hai batch cùng phân phối; tăng số mẫu có thể giúp mô hình học thêm trường hợp, nhưng kết quả trên holdout này không bảo đảm thêm dữ liệu luôn cải thiện chất lượng. Commit `cdea4ee` chỉ thay file dữ liệu DVC đã tự kích hoạt đủ bốn jobs và triển khai model thành công.
 
 Điền vào bảng trên dựa trên kết quả thực tế của bạn.
 
