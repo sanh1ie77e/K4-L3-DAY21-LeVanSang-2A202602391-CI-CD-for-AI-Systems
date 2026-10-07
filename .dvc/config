@@ -1,0 +1,4 @@
+[core]
+    remote = labstore
+['remote "labstore"']
+    url = s3://day21-levansang-2a202602391-20261007/dvc

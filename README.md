@@ -4,6 +4,8 @@ Course: AIInAction - VinUni
 Buổi: Day 21 - CI/CD cho AI Systems
 Khoá: K4
 
+**Bản triển khai trong repository này dùng AWS:** Amazon S3 thay GCS, EC2 Ubuntu thay GCE, `dvc[s3]` và `boto3` thay các thư viện GCP. Quy trình ba bước, dữ liệu, MLflow và ngưỡng F1 của đề được giữ nguyên. Xem [hướng dẫn chạy trên Windows và AWS](HUONG_DAN_CHAY.md); các file `tasks/` vẫn giữ ví dụ gốc để đối chiếu với đề bài.
+
 ---
 
 ## Mục Tiêu Học Tập
@@ -49,7 +51,7 @@ Bước 1 chỉ chạy trên máy tính cá nhân. Bước 2 và Bước 3 sử 
 
 Phần mềm cần cài đặt trên máy tính cá nhân:
 
-- Python 3.10 trở lên
+- Python 3.10–3.12 (bộ thư viện được ghim trong lab không phù hợp với Python 3.13)
 - Git và tài khoản GitHub
 - Tài khoản cloud (chọn một trong ba: GCP, AWS, hoặc Azure — gói miễn phí/trial đủ dùng cho lab này)
 - CLI của cloud provider đã chọn (xem hướng dẫn cài đặt chi tiết tại tasks/buoc-2.md)
@@ -57,7 +59,7 @@ Phần mềm cần cài đặt trên máy tính cá nhân:
 Kiểm tra cài đặt:
 
 ```bash
-python --version     # Python 3.10.x trở lên
+python --version     # Python 3.10.x–3.12.x
 git --version
 # Kiểm tra CLI của cloud provider đã chọn (một trong ba):
 gcloud --version     # GCP
@@ -216,16 +218,17 @@ __pycache__/
 ```
 mlflow==2.13.0
 scikit-learn==1.4.2
+numpy==1.26.4
 pandas==2.2.2
-# DVC extra theo provider: [gs]=GCP, [s3]=AWS, [azure]=Azure
-dvc[gs]==3.50.1
+# Repository này chọn AWS; [gs]=GCP, [s3]=AWS, [azure]=Azure
+dvc[s3]==3.50.1
 pathspec==0.11.2
 pytest==8.2.0
 fastapi==0.111.0
 uvicorn==0.29.0
 joblib==1.4.2
-# Cloud SDK theo provider: google-cloud-storage (GCP), boto3 (AWS), azure-storage-blob (Azure)
-google-cloud-storage==2.16.0
+# Cloud SDK AWS; GCP dùng google-cloud-storage, Azure dùng azure-storage-blob
+boto3==1.43.106
 pyyaml==6.0.1
 ```
 

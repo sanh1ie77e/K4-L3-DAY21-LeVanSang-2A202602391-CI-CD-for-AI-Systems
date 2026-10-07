@@ -1,12 +1,8 @@
-mlflow==2.13.0
+# Match the training model's serialization and dependency versions on the VM.
 scikit-learn==1.4.2
 numpy==1.26.4
 pandas==2.2.2
-dvc[s3]==3.50.1
-pathspec==0.11.2
-pytest==8.2.0
 fastapi==0.111.0
 uvicorn==0.29.0
 joblib==1.4.2
 boto3==1.43.106
-pyyaml==6.0.1

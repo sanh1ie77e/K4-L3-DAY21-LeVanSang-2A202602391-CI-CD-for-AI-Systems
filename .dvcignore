@@ -1,0 +1,17 @@
+# Add patterns of files dvc should ignore, which could improve
+# the performance. Learn more at
+# https://dvc.org/doc/user-guide/dvcignore
+# Local environments, generated artifacts and test caches are not DVC inputs.
+.venv/
+.venv-lab/
+.venv313/
+.venv310/
+.python/
+.uv-cache/
+.wheelhouse/
+.pip-cache/
+.pytest_cache/
+mlartifacts/
+mlruns/
+outputs/
+models/
